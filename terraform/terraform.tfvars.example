@@ -1,0 +1,43 @@
+# Example Terraform variables file for Dormventory
+# Copy this file to terraform.tfvars and update the values
+
+# AWS Configuration
+aws_region = "us-west-2"
+environment = "dev"
+
+# Project Configuration
+project_name = "dormventory"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+
+# Database Configuration
+db_instance_class = "db.t3.micro"
+db_allocated_storage = 20
+db_max_allocated_storage = 100
+db_username = "dormventory"
+db_password = "your-secure-database-password-here"
+
+# ECS Configuration
+ecs_cpu = 512
+ecs_memory = 1024
+ecs_desired_count = 1
+
+# Security Configuration
+jwt_secret = "your-jwt-secret-key-here"
+
+# AWS Credentials (for development/testing only)
+# In production, use IAM roles instead
+aws_access_key = "your-aws-access-key"
+aws_secret_key = "your-aws-secret-key"
+
+# Common Tags
+common_tags = {
+  Project     = "Dormventory"
+  Environment = "dev"
+  ManagedBy   = "Terraform"
+  Owner       = "Your Name"
+  CostCenter  = "Engineering"
+}

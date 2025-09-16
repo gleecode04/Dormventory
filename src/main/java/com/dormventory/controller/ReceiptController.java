@@ -1,9 +1,11 @@
 package com.dormventory.controller;
 
+import com.dormventory.model.Item;
 import com.dormventory.service.ReceiptService;
 import com.dormventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +33,9 @@ public class ReceiptController {
     @PostMapping("/confirm")
     public ResponseEntity<?> confirmItems(
             @RequestBody List<String> confirmedItems,
-            @RequestParam UUID userId) {
+            Authentication authentication) {
         try {
+            UUID userId = inventoryService.getCurrentUserId(authentication);
             for (String itemName : confirmedItems) {
                 Item item = new Item();
                 item.setName(itemName);

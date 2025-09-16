@@ -7,6 +7,7 @@ import com.dormventory.repository.UserRepository;
 import com.dormventory.exception.NotFoundException;
 import com.dormventory.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,30 +39,38 @@ public class InventoryService {
     }
 
     @Transactional
-    public void deleteItem(UUID itemId, UUID userId) {
+    public void deleteItem(UUID itemId) {
         Item item = itemRepository.findById(itemId)
             .orElseThrow(() -> new NotFoundException("Item not found"));
-
-        if (!item.getOwner().getId().equals(userId)) {
-            throw new UnauthorizedException("You are not the owner of this item");
-        }
 
         itemRepository.delete(item);
     }
 
     @Transactional
-    public void transferItem(UUID itemId, UUID fromUserId, UUID toUserId) {
+    public void transferItem(UUID itemId, UUID toUserId) {
         Item item = itemRepository.findById(itemId)
             .orElseThrow(() -> new NotFoundException("Item not found"));
-
-        if (!item.getOwner().getId().equals(fromUserId)) {
-            throw new UnauthorizedException("You are not the owner of this item");
-        }
 
         User newOwner = userRepository.findById(toUserId)
             .orElseThrow(() -> new NotFoundException("Target user not found"));
 
         item.setOwner(newOwner);
         itemRepository.save(item);
+    }
+
+    public UUID getCurrentUserId(Authentication authentication) {
+        User user = userRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new NotFoundException("User not found"));
+        return user.getId();
+    }
+
+    public boolean isItemOwner(UUID itemId, String userEmail) {
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new NotFoundException("Item not found"));
+        
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+        
+        return item.getOwner().getId().equals(user.getId());
     }
 } 
